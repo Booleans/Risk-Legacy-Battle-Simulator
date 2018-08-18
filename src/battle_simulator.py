@@ -1,8 +1,7 @@
 
 import numpy as np
 
-def simulate_single_battle(n_attackers=3, n_defenders=2,
-                           modifiers={'attack1':0, 'attack2':0, 'defense1':0, 'defense2':0}):
+def simulate_single_battle(n_attackers=3, n_defenders=2, modifiers={'attack1':0, 'attack2':0, 'defense1':0, 'defense2':0}):
     """
     Return the result of a single simulated battle in Risk Legacy. 
 
@@ -51,3 +50,33 @@ def simulate_single_battle(n_attackers=3, n_defenders=2,
     n_defenders_remaining = n_defenders - defenders_killed
         
     return n_attackers_remaining, n_defenders_remaining
+
+def simulate_n_battles(n_attackers, n_defenders, modifiers={'attack1':0, 'attack2':0, 'defense1':0, 'defense2':0}, n_sims=10**4):
+    """
+    Simulate a battle until either all attackers or defenders have been killed.  Repeat this process n_simulations number of times.
+
+    Args:
+        n_attackers (int): The number of attacking troops at the beginning of the battle.
+        n_defenders (int): The number of defending troops at the beginning of the battle.
+        modifiers (dict of str: int): The modifiers to be applied to each die roll. Attack1 refers to the highest 
+                                      die roll of the attacker while Attack2 is the second-highest. The same ordering 
+                                      applies to the Defense1 and Defense2 keys in the modifier dict. 
+
+    Returns:
+        dict(str, int): A tuple containing the number of victories for the attacker and defender for n_sims number of simulations.
+    """
+    wins = {'attacker':0, 'defender':0}
+    
+    for _ in range(n_sims):
+        n_attack = n_attackers
+        n_defend = n_defenders
+        
+        while n_attack > 0 and n_defend > 0:
+            n_attack, n_defend = simulate_single_battle(n_attack, n_defend, modifiers)
+
+        if n_attack > 0:
+            wins['attacker'] += 1
+        else:
+            wins['defender'] += 1
+    
+    return wins
