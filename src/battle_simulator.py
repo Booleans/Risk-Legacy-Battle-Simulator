@@ -63,7 +63,7 @@ def simulate_n_battles(n_attackers, n_defenders, modifiers={'attack1':0, 'attack
                                       applies to the Defense1 and Defense2 keys in the modifier dict. 
 
     Returns:
-        dict(str, int): A tuple containing the number of victories for the attacker and defender for n_sims number of simulations.
+        dict(str, int): A dict containing the number of victories for the attacker and defender for n_sims number of simulations.
     """
     wins = {'attacker':0, 'defender':0}
     
@@ -80,3 +80,36 @@ def simulate_n_battles(n_attackers, n_defenders, modifiers={'attack1':0, 'attack
             wins['defender'] += 1
     
     return wins
+
+def simulate_battles_along_path(n_attackers, path, n_sims=10**4):
+    """
+    Return the probability of successfully destroying all enemy troops along a path given your starting number of troops.
+    Starting number of troops should be the total number of troops on the territory, including the one you are forced to leave
+    behind to hold the territory.
+
+    Args:
+        n_attackers (int): The number of attacking troops (determines number of dice rolled).
+        path (int): 
+        n_sims (int): Number of times we want to simulate attempting this battle path.
+
+    Returns:
+        (int, int): A tuple containing the number of attacking troops remaining and defending troops remaining.
+    """
+    n_attackers_remaining = []
+    for _ in range(n_sims):
+        attacking_troops = n_attackers
+        for territory in path:
+            # You must leave one attacker behind if you intend to advance troops after victory.
+            if attacking_troops > 1:
+                attacking_troops -= 1
+
+            n_defenders = territory[0]
+            modifiers = territory[1]
+
+            while attacking_troops > 0 and n_defenders > 0:
+                attacking_troops, n_defenders = simulate_single_battle(attacking_troops, n_defenders, modifiers)
+
+        n_attackers_remaining.append(attacking_troops)
+
+    n_attackers_remaining = np.array(n_attackers_remaining)
+    return np.sum(n_attackers_remaining > 0) / n_sims
