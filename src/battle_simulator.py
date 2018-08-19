@@ -113,3 +113,39 @@ def simulate_battles_along_path(n_attackers, path, n_sims=10**4):
 
     n_attackers_remaining = np.array(n_attackers_remaining)
     return np.sum(n_attackers_remaining > 0) / n_sims
+
+def simulate_generic_battle(n_rolls=10**6, modifiers={'attack1':0, 'attack2':0, 'defense1':0, 'defense2':0}):
+    """
+    Simulate a battle with 3 attacking and 2 defending units. Return the ratio of attackers killed per defender killed
+    for the given die roll modifiers. This approximates the expected ratio of attacking:defending units in order
+    to conquer a territory with the given modifiers.
+
+    Args:
+        n_rolls (int): The number of battles to simulate.
+        modifiers (dict of str: int): The modifiers to be applied to each die roll. Attack1 refers to the highest 
+                                      die roll of the attacker while Attack2 is the second-highest. The same ordering 
+                                      applies to the Defense1 and Defense2 keys in the modifier dict.
+
+    Returns:
+        str: A string explaining the ratio of attacking troops lost to defending troops lost.
+    """
+    attack_rolls  = np.random.randint(1, 7, size=n_rolls*3).reshape(n_rolls,3)
+    defense_rolls = np.random.randint(1, 7, size=n_rolls*2).reshape(n_rolls,2)
+    
+    defense_rolls.sort(axis=1)
+    attack_rolls.sort(axis=1)
+    
+    # Rolls need to be modified but can only be a max value of 6.
+    best_attack_rolls = np.minimum((attack_rolls[:,-1] + modifiers['attack1']), 6)
+    second_best_attack_rolls = np.minimum((attack_rolls[:,-2] + modifiers['attack2']), 6)
+
+    best_defense_rolls = np.minimum((defense_rolls[:,-1] + modifiers['defense1']), 6)
+    second_best_defense_rolls = np.minimum((defense_rolls[:,-2] + modifiers['defense2']), 6)
+    
+    defenders_lost = (np.sum(best_attack_rolls > best_defense_rolls) +
+                  np.sum(second_best_attack_rolls > second_best_defense_rolls))
+
+    attackers_lost = (np.sum(best_attack_rolls <= best_defense_rolls) +
+                  np.sum(second_best_attack_rolls <= second_best_defense_rolls))
+    
+    return (f'You should expect to need {attackers_lost/defenders_lost} attacking units for every defending unit in order to take this territory.')
