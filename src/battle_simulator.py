@@ -1,6 +1,8 @@
 
 import numpy as np
 
+default_modifiers = {'attack1':0, 'attack2':0, 'defense1':0, 'defense2':0}
+
 def simulate_single_battle(n_attackers=3, n_defenders=2, modifiers={'attack1':0, 'attack2':0, 'defense1':0, 'defense2':0}):
     """
     Return the result of a single simulated battle in Risk Legacy. 
@@ -79,7 +81,9 @@ def simulate_n_battles(n_attackers, n_defenders, modifiers={'attack1':0, 'attack
         else:
             wins['defender'] += 1
     
-    return wins
+    win_percentage = wins['attacker'] / n_sims * 100
+
+    return (f'The attacker should expect to win {win_percentage}% of the time in this scenario.')
 
 def simulate_battles_along_path(n_attackers, path, n_sims=10**4):
     """
@@ -112,7 +116,8 @@ def simulate_battles_along_path(n_attackers, path, n_sims=10**4):
         n_attackers_remaining.append(attacking_troops)
 
     n_attackers_remaining = np.array(n_attackers_remaining)
-    return np.sum(n_attackers_remaining > 0) / n_sims
+    win_percentage = np.sum(n_attackers_remaining > 0) / n_sims * 100
+    return (f'The attacker should expect to win {win_percentage}% of the time in this scenario.')
 
 def simulate_generic_battle(n_rolls=10**6, modifiers={'attack1':0, 'attack2':0, 'defense1':0, 'defense2':0}):
     """
@@ -147,5 +152,7 @@ def simulate_generic_battle(n_rolls=10**6, modifiers={'attack1':0, 'attack2':0, 
 
     attackers_lost = (np.sum(best_attack_rolls <= best_defense_rolls) +
                   np.sum(second_best_attack_rolls <= second_best_defense_rolls))
+
+    ratio = round(attackers_lost / defenders_lost, 2)
     
-    return (f'You should expect to need {attackers_lost/defenders_lost} attacking units for every defending unit in order to take this territory.')
+    return (f'You should expect to need {ratio} attacking units for every defending unit in order to take this territory.')
