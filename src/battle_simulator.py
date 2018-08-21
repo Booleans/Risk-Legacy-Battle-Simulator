@@ -1,6 +1,10 @@
 
 import numpy as np
 
+# attack1: Modifier to be applied to the attacker's highest die roll
+# attack2: Modifier to be applied to the attacker's second highest die roll
+# defense1: Modifier to be applied to the defender's higher die roll
+# defense2: Modifier to be applied to the defender's second higher die roll
 default_modifiers = {'attack1':0, 'attack2':0, 'defense1':0, 'defense2':0}
 
 def simulate_single_battle(n_attackers=3, n_defenders=2, modifiers={'attack1':0, 'attack2':0, 'defense1':0, 'defense2':0}):
@@ -65,7 +69,7 @@ def simulate_n_battles(n_attackers, n_defenders, modifiers={'attack1':0, 'attack
                                       applies to the Defense1 and Defense2 keys in the modifier dict. 
 
     Returns:
-        dict(str, int): A dict containing the number of victories for the attacker and defender for n_sims number of simulations.
+        str: A string stating the percent of the time the attacker won in the simulation.
     """
     wins = {'attacker':0, 'defender':0}
     
@@ -93,11 +97,11 @@ def simulate_battles_along_path(n_attackers, path, n_sims=10**4):
 
     Args:
         n_attackers (int): The number of attacking troops (determines number of dice rolled).
-        path (int): 
+        path list(list(int, dict)): A nested list that contains the number of defending units along with the modifiers for the battle.
         n_sims (int): Number of times we want to simulate attempting this battle path.
 
     Returns:
-        (int, int): A tuple containing the number of attacking troops remaining and defending troops remaining.
+        str: A string containing the percentage of the time the attacker won in the given scenario.
     """
     n_attackers_remaining = []
     for _ in range(n_sims):
@@ -132,7 +136,7 @@ def simulate_generic_battle(n_rolls=10**6, modifiers={'attack1':0, 'attack2':0, 
                                       applies to the Defense1 and Defense2 keys in the modifier dict.
 
     Returns:
-        str: A string explaining the ratio of attacking troops lost to defending troops lost.
+        str: A string containing the ratio of attacking troops lost to defending troops lost.
     """
     attack_rolls  = np.random.randint(1, 7, size=n_rolls*3).reshape(n_rolls,3)
     defense_rolls = np.random.randint(1, 7, size=n_rolls*2).reshape(n_rolls,2)
