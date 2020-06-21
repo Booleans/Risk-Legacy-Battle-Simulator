@@ -1,5 +1,7 @@
 #  Battle Simulator for Risk Legacy
 
+![Box Art](https://github.com/Booleans/risk-legacy-battle-simulator/blob/master/img/box_art.png)
+
 ### Purpose
 
 This code was written to give myself an advantage when playing against my friends in the board game [Risk Legacy](https://boardgamegeek.com/boardgame/105134/risk-legacy).
